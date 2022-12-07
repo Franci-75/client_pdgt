@@ -1,0 +1,22 @@
+{
+  "name": "client",
+  "version": "1.0.0",
+  "description": "Client version of PDGT project",
+  "main": "bot.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [
+    "Project",
+    "Telegram",
+    "Node",
+    "Movies"
+  ],
+  "author": "Francesco Ortolani",
+  "license": "ISC",
+  "dependencies": {
+    "axios": "0.26.0",
+    "node-localstorage": "^2.2.1",
+    "telegraf": "^4.11.2"
+  }
+}
