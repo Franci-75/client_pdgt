@@ -13,7 +13,7 @@
  var storage = new LocalStorage("./store");
 
 // Define the server production url and port
-const serverUrl = process.env.SERVER_URL || 'https://server-pdgt.herokuapp.com/';
+const serverUrl = process.env.SERVER_URL || 'https://server-pdgt.herokuapp.com/server.js';
 
 module.exports = {
     getMovieInfo: function(movieTitle, ctx) {
