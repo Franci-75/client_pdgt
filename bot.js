@@ -10,7 +10,7 @@
  const telegraf = require("telegraf"); 
  const core = require("./core");
  
- const bot = new telegraf.Telegraf('5502765158:AAEj6oCo3rHNrvvsfFtmK-WVwczXh5JO2DI');
+ const bot = new telegraf.Telegraf(process.env.BOT_TOKEN);
 
 
  
