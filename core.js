@@ -22,6 +22,18 @@ module.exports = {
 
     getPopulars: function(ctx) {
         getPopulars(ctx);
+    },
+
+    newSession: function(telegramUser, username, password, ctx)  {
+        newSession(telegramUser, username, password, ctx); 
+    },
+
+    deleteSession: function(telegramUser, ctx) {
+        deleteSession(telegramUser, ctx);
+    },
+
+    rateMovie: function(telegramUser, movieTitle, score, ctx) {
+        rateMovie(telegramUser, movieTitle, score, ctx);
     }
 }
 
@@ -47,14 +59,14 @@ function getMovieInfo(movieTitle, ctx) {
         console.log(error); 
         ctx.reply("An error occurred while accessing the movie info");
     })
- }
+}
 
 
  /**
  * Return a list of the 5 most popular fils right now.
  * @param {*} ctx 
  */
-  function getPopulars(ctx) {
+function getPopulars(ctx) {
     axios.get(`${serverUrl}/get-populars`)
     .then(data => {
         ctx.reply(`1: ${data.data.pop_1}`);
@@ -63,7 +75,107 @@ function getMovieInfo(movieTitle, ctx) {
         ctx.reply(`4: ${data.data.pop_4}`);
         ctx.reply(`5: ${data.data.pop_5}`);
     }).catch(error => {
-        console.log(error); 
+        console.log(error);
         ctx.reply("An error occurred while fetchin popular movies");
     });
- }
+}
+
+
+/**
+ * Create a new session for the user
+ * @param {String} telegramUser 
+ * @param {String} username 
+ * @param {String} password 
+ * @param {*} ctx 
+ */
+function newSession(telegramUser, username, password, ctx) {
+    let userSession = storage.getItem(telegramUser);
+    if(userSession) {
+        ctx.reply("This user have a currently active session!");
+        return;
+    }
+    axios.post(`${serverUrl}/request-token`, {
+        username: username,
+        password: password
+    }).then(data => {
+        if(data.data.success) {
+            axios.post(`${serverUrl}/create-session`, {
+                request_token: data.data.request_token,
+                username: username
+            }).then(data => {
+                let saveObj = JSON.stringify({ username: username,session_id: data.data.session_id});
+                storage.setItem(telegramUser, saveObj);
+                ctx.reply("Successful login!");
+            }).catch(error => {
+                ctx.reply("Error while creating session");
+                console.log(error);
+            });
+        } else {
+            ctx.reply("Error! invalid login credentials");
+            console.log("Invalid login credentials");
+        }
+    }).catch(error => {
+        ctx.reply("An error occurred during the initialization of the session");
+        console.log(`Error: ${error}`);
+    });
+}
+
+
+/**
+ * Execute the logout of the user
+ * @param {String} telegramUser 
+ * @param {*} ctx 
+ */
+function  deleteSession(telegramUser, ctx) {
+    let userSession = storage.getItem(telegramUser);
+    if(!userSession) {
+        ctx.reply("This user haven't any active sessions!");
+        return;
+    }
+    let obj = JSON.parse(userSession);
+    axios.delete(`${serverUrl}/delete-session/${obj.session_id}`)
+        .then(data => {
+            if (data.data.success) {
+                storage.removeItem(telegramUser);
+                ctx.reply("User logged out!");
+            } else {
+                ctx.reply("An error occurred while destroying the session");
+            }
+        }).catch(error => {
+            ctx.reply("An error occurred during the destruction of the session");
+            console.log(`Error: ${error}`);
+        });
+}
+
+/**
+ * Rate a movie
+ * @param {String} telegramUser 
+ * @param {String} movieTitle 
+ * @param {String} score 
+ * @param {*} ctx 
+ */
+function rateMovie(telegramUser, movieTitle, score, ctx) {
+    let userSession = storage.getItem(telegramUser);
+    if(!userSession) {
+        ctx.reply("This user haven't any active sessions!");
+        return;
+    }
+
+    let obj = JSON.parse(userSession);
+    axios.post(`${serverUrl}/rate/${movieTitle}`, {
+        score: score,
+        session_id: obj.session_id
+    }).then(data => {
+        if (data.data.success) {
+            ctx.reply(`You've submitted a score of ${score} for the movie ${movieTitle}`);
+        } else {
+            ctx.reply(`Error while submitting the score for the movie ${movieTitle}`);
+        }
+    }).catch(error => {
+        ctx.reply(`An error occurred while submitting the rating for the movie ${movieTitle}`);
+        console.log(`Error: ${error}`);
+    });
+}
+
+
+
