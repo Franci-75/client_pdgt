@@ -99,12 +99,12 @@ function newSession(telegramUser, username, password, ctx) {
         ctx.reply("This user have a currently active session!");
         return;
     }
-    axios.post(${serverUrl}/request-token, {
+    axios.post(`${serverUrl}/request-token`, {
         username: username,
         password: password
     }).then(data => {
         if(data.data.success) {
-            axios.post(${serverUrl}/create-session, {
+            axios.post(`${serverUrl}/create-session`, {
                 request_token: data.data.request_token,
                 username: username
             }).then(data => {
@@ -133,7 +133,7 @@ function newSession(telegramUser, username, password, ctx) {
         }
     }).catch(error => {
         ctx.reply("An error occurred during the initialization of the session");
-        console.log(Error: ${error});
+        console.log(`Error: ${error}`);
     });
 }
 
