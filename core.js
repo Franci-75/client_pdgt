@@ -34,8 +34,13 @@ module.exports = {
 
     rateMovie: function(telegramUser, movieTitle, score, ctx) {
         rateMovie(telegramUser, movieTitle, score, ctx);
-    }
+    },
 }
+
+function saveSession(telegramUser, username, sessionId) {
+    let saveObj = JSON.stringify({ username: username, session_id: sessionId});
+    storage.setItem(telegramUser, saveObj);
+};
 
 /**
  * Get the informations for a movie
@@ -94,21 +99,33 @@ function newSession(telegramUser, username, password, ctx) {
         ctx.reply("This user have a currently active session!");
         return;
     }
-    axios.post(`${serverUrl}/request-token`, {
+    axios.post(${serverUrl}/request-token, {
         username: username,
         password: password
     }).then(data => {
         if(data.data.success) {
-            axios.post(`${serverUrl}/create-session`, {
+            axios.post(${serverUrl}/create-session, {
                 request_token: data.data.request_token,
                 username: username
             }).then(data => {
-                let saveObj = JSON.stringify({ username: username,session_id: data.data.session_id});
-                storage.setItem(telegramUser, saveObj);
+                saveSession(telegramUser, username, data.data.session_id);
                 ctx.reply("Successful login!");
             }).catch(error => {
-                ctx.reply("Error while creating session");
-                console.log(error);
+                if (error.response) {
+                    // Heroku 'not implemented' failure point.
+                    // Check request response
+                    if(error.response.status == 501 && error.response.data.success) {
+                        saveSession(telegramUser, username, error.response.data.session_id);
+                        ctx.reply("Successful login!");
+                    } else {
+                        // Generic error
+                        console.log(error.response.data);
+                        console.log(error.response.status);
+                        console.log(error.response.headers);
+
+                        ctx.reply("Error while creating session");
+                    }   
+                }
             });
         } else {
             ctx.reply("Error! invalid login credentials");
@@ -116,7 +133,7 @@ function newSession(telegramUser, username, password, ctx) {
         }
     }).catch(error => {
         ctx.reply("An error occurred during the initialization of the session");
-        console.log(`Error: ${error}`);
+        console.log(Error: ${error});
     });
 }
 
