@@ -74,11 +74,7 @@ function getMovieInfo(movieTitle, ctx) {
 function getPopulars(ctx) {
     axios.get(`${serverUrl}/get-populars`)
     .then(data => {
-        ctx.reply(`1: ${data.data.pop_1}`);
-        ctx.reply(`2: ${data.data.pop_2}`);
-        ctx.reply(`3: ${data.data.pop_3}`);
-        ctx.reply(`4: ${data.data.pop_4}`);
-        ctx.reply(`5: ${data.data.pop_5}`);
+        ctx.reply(`1: ${data.data.pop_1}\n2: ${data.data.pop_2}\n3: ${data.data.pop_3}\n4: ${data.data.pop_4}\n5: ${data.data.pop_5}`);
     }).catch(error => {
         console.log(error);
         ctx.reply("An error occurred while fetchin popular movies");
