@@ -10,23 +10,12 @@
 const telegraf = require("telegraf"); 
 const core = require("./core");
  
-
-
-
-
-
-
 const API_TOKEN = process.env.API_TOKEN || '';
 const PORT = process.env.PORT || 3000;
-const URL = process.env.URL || 'https://client-pdgt.herokuapp.com/';
+const URL = process.env.URL || 'https://client-pdgt.herokuapp.com';
 
 const bot = new telegraf.Telegraf(process.env.BOT_TOKEN);
 
-
-
-
-
- 
 /**
  * Execute the info action
  */
@@ -69,7 +58,6 @@ bot.command('logout', ctx => {
     core.deleteSession(ctx.update.message.from.username, ctx);
 });
 
-
 /**
  * Execute the rate action
  */
@@ -80,7 +68,6 @@ bot.command('rate', ctx => {
 
     core.rateMovie(ctx.update.message.from.username, movie_title, score, ctx);
 });
-
 
 bot.start(ctx => ctx.reply("Welcome to THE MOVIE DB bot! Login with the \"/login\" command for starting use the app"));
 bot.telegram.setWebhook(`${URL}/bot${API_TOKEN}`);
