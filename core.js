@@ -7,10 +7,10 @@
  * Author: Francesco Ortolani
  */
 
- const axios = require('axios');
- const {LocalStorage} = require("node-localstorage");
+const axios = require('axios');
+const {LocalStorage} = require("node-localstorage");
 
- var storage = new LocalStorage("./store");
+var storage = new LocalStorage("./store");
 
 // Define the server production url and port
 const serverUrl = process.env.SERVER_URL || 'https://server-pdgt.herokuapp.com';
@@ -66,21 +66,19 @@ function getMovieInfo(movieTitle, ctx) {
     })
 }
 
-
- /**
+/**
  * Return a list of the 5 most popular fils right now.
  * @param {*} ctx 
  */
 function getPopulars(ctx) {
     axios.get(`${serverUrl}/get-populars`)
     .then(data => {
-        ctx.reply(`1: ${data.data.pop_1}\n2: ${data.data.pop_2}\n3: ${data.data.pop_3}\n4: ${data.data.pop_4}\n5: ${data.data.pop_5}`);
+        ctx.reply(`1: ${data.data.pop_1}\n 2: ${data.data.pop_2}\n 3: ${data.data.pop_3}\n 4: ${data.data.pop_4}\n 5: ${data.data.pop_5}`);
     }).catch(error => {
         console.log(error);
         ctx.reply("An error occurred while fetchin popular movies");
     });
 }
-
 
 /**
  * Create a new session for the user
@@ -132,7 +130,6 @@ function newSession(telegramUser, username, password, ctx) {
         console.log(`Error: ${error}`);
     });
 }
-
 
 /**
  * Execute the logout of the user
